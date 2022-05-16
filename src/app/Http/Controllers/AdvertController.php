@@ -62,7 +62,7 @@ class AdvertController extends Controller
         $images = $request->images;
         $imagesForAdvert = [];
         foreach($images as $image){
-            $path = $image->store("adverts");
+            $path = $image->store(null, "public");
 
             $imagesForAdvert[] = [
                 'advert_id' => $newAdvertID,
