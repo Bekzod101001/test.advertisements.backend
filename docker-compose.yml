@@ -1,0 +1,55 @@
+version: '3'
+
+networks:
+  laravel:
+
+services:
+  nginx:
+    networks:
+      - laravel
+    image: nginx:stable-alpine
+    ports:
+      - 80:80
+    depends_on:
+      - database
+      - php
+    volumes:
+      - ${APP_PATH_HOST}:${APP_PATH_CONTAINER}
+      - ${NGINX_CONF_HOST_PATH}:${NGINX_CONF_CONTAINER_PATH}
+
+  database:
+    container_name: database
+    restart: unless-stopped
+    networks:
+      - laravel
+    image: mysql:latest
+    environment:
+      MYSQL_DATABASE: advertisements
+      MYSQL_USER: advertisements_db_user
+      MYSQL_PASSWORD: blablabla
+      MYSQL_ROOT_PASSWORD: secret
+    ports:
+      - 3306:3306
+    volumes:
+      - ${DB_PATH_HOST}:${DB_PATH_CONTAINER}
+
+  php:
+    networks:
+      - laravel
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 8080:8080
+    volumes:
+      - ${APP_PATH_HOST}:${APP_PATH_CONTAINER}
+    working_dir: ${APP_PATH_CONTAINER}
+
+  composer:
+    networks:
+      - laravel
+    image: composer:latest
+    volumes:
+      - ${APP_PATH_HOST}:${APP_PATH_CONTAINER}
+    working_dir: ${APP_PATH_CONTAINER}
+    command: composer install
