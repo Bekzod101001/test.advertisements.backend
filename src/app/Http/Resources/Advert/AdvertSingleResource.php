@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\Advert;
 
+use App\Http\Resources\AdvertImage\AdvertImageResource;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Auth;
 
@@ -18,7 +19,7 @@ class AdvertSingleResource extends AdvertBasicResource
         return parent::toArray($request) + [
             'editableForAuthUser' => $this->author_id === (auth('sanctum')->user()->id ?? null),
             'description' => $this->description,
-            'images' => count($this->images) > 0 ? $this->images()->pluck('path')->toArray() : []
+            'images' => AdvertImageResource::collection($this->images)
         ];
     }
 }
